@@ -48,7 +48,14 @@
       - [トラブル](#トラブル)
         - [CloudflaredとNginxを挟むとドメインが信頼できなくなる](#cloudflaredとnginxを挟むとドメインが信頼できなくなる)
         - [SSDへの書き込みができない](#ssdへの書き込みができない)
-
+    - [Pythonスクリプト](#pythonスクリプト)
+      - [分類](#分類-8)
+      - [システム](#システム-4)
+      - [役割](#役割-8)
+    - [Webサーバー](#webサーバー)
+      - [分類](#分類-9)
+      - [システム](#システム-5)
+      - [役割](#役割-9)
 
 ## なぜこんなことになったのか
 初心忘るべからず
@@ -96,12 +103,14 @@ VMが利用できるようになり、リスクを伴う検証が気軽にでき
 あれこれ考えるの本当に楽しいです。
 
 ## 現在の構成！
-![Map](img/ServerMap.drawio.png)
+![Map](img/ServerMap2.png)
 
 Proxmoxをインストールしたマシンを２台用意しクラスタを形成しています。
 
 ただしLet'snoteは入院中なため、デスクトップPC１台で運用しています。
 
+外部に公開するサーバーはすべてCloudflareを経由しています
+![zero](img/cloudflarezero.png)
 ## 物理機器
 ここからは自分用のメモを含んでいます。
 
@@ -220,3 +229,22 @@ Proxmoxで実行している仮想マシン等です
   * 権限？
 * 解決
   * SFTP経由で読み書きする
+
+### Pythonスクリプト
+#### 分類
+* LXC
+#### システム
+* ubuntu-22.04-standard_22.04-1_amd64
+#### 役割
+* UNIPAで出席登録が開始されたことを通知するスクリプトを動かす
+  * [ClassNotice - GitHub](https://github.com/matsukz/ClassNotice)
+
+### Webサーバー
+#### 分類
+* LXC
+#### システム
+* ubuntu-22.04-standard_22.04-1_amd64
+* Docker Engine
+* Docker Compose
+#### 役割
+* サーバーの死活確認を行うWebサーバーを実行する
