@@ -248,3 +248,6 @@ Proxmoxで実行している仮想マシン等です
 * Docker Compose
 #### 役割
 * サーバーの死活確認を行うWebサーバーを実行する
+  * [Check_Server_Health - Github](https://github.com/matsukz/Check_Server_Health)
+  * 意図しないアクセスを防ぐため、Cloudflare Tunnelの認証機能を利用
+    * 条件はヒ・ミ・ツ
