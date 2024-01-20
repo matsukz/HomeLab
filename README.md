@@ -41,6 +41,13 @@
       - [分類](#分類-6)
       - [システム](#システム-2)
       - [役割](#役割-6)
+    - [NextCloud](#nextcloud)
+      - [分類](#分類-7)
+      - [システム](#システム-3)
+      - [役割](#役割-7)
+      - [トラブル](#トラブル)
+        - [CloudflaredとNginxを挟むとドメインが信頼できなくなる](#cloudflaredとnginxを挟むとドメインが信頼できなくなる)
+        - [SSDへの書き込みができない](#ssdへの書き込みができない)
 
 
 ## なぜこんなことになったのか
@@ -175,3 +182,41 @@ Proxmoxで実行している仮想マシン等です
   * 
 * 遠隔地に存在する機器にローカルに存在するかのようなノリでアクセスできる
 ![warp](img/warp-to-warp2.png)
+
+### NextCloud
+#### 分類
+* VM
+
+#### システム
+* Ubuntu Desktop x64
+  * 日本語ディレクトリの文字化け防止
+* Snap版NextCloud
+
+#### 役割
+* NextCloudでファイルサーバーを運用する
+* 外部からの接続にはCloudflare Tunnelを利用する
+![Nextcloud](img/NextCloud.png)
+* 設定ファイル
+  * [Nginx Configuration - nextcloud.conf](Supplementary/nextcloudc.conf)
+  * [NextCloud Configuration - config.php](Supplementary/config.php)
+
+#### トラブル
+##### CloudflaredとNginxを挟むとドメインが信頼できなくなる
+* 原因
+  * 接続元IPアドレスに関するHTTPヘッダが`Cloudflared`もしくは`Nginx`のIPアドレス`127.0.0.1`になっている
+* 解決
+  * Cloudflare CDNを経由したときに付与されるヘッダ`CF-Connecting-IP`に関する設定を行う
+    ```config
+    set_real_ip_from 127.0.0.1;
+    real_ip_header CF-Connecting-IP;
+    ```
+  * [Restoring original visitor IPs - Cloudflare docs](https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/)
+  * スキーマに関する設定を追加する
+    ```config
+    proxy_set_header X-Forwarded-Proto $scheme
+    ```
+##### SSDへの書き込みができない
+* 原因
+  * 権限？
+* 解決
+  * SFTP経由で読み書きする
