@@ -7,43 +7,21 @@
 - [楽しい自宅サーバー](#楽しい自宅サーバー)
   - [目次](#目次)
   - [なぜこんなことになったのか](#なぜこんなことになったのか)
-    - [2019年](#2019年)
-    - [2021年](#2021年)
-    - [2023年](#2023年)
   - [現在の構成！](#現在の構成)
   - [物理機器](#物理機器)
     - [TP-LINK ArcherAX73](#tp-link-archerax73)
-      - [分類](#分類)
-      - [役割](#役割)
     - [BUFFALOのやつ](#buffaloのやつ)
-      - [分類](#分類-1)
-      - [役割](#役割-1)
     - [Let'snote](#letsnote)
-      - [分類](#分類-2)
-      - [役割](#役割-2)
-      - [メモ](#メモ)
-      - [リンク集](#リンク集)
     - [新デスクトップ](#新デスクトップ)
-      - [分類](#分類-3)
-      - [役割](#役割-3)
   - [仮想マシン・サービス](#仮想マシンサービス)
     - [検証用Ubuntu](#検証用ubuntu)
-      - [分類](#分類-4)
-      - [システム](#システム)
-      - [役割](#役割-4)
     - [VPN DNS](#vpn-dns)
-      - [分類](#分類-5)
-      - [システム](#システム-1)
-      - [役割](#役割-5)
-      - [OpenVPN](#openvpn)
-      - [DNSサーバー](#dnsサーバー)
     - [WARP接続用サーバー](#warp接続用サーバー)
-      - [分類](#分類-6)
-      - [システム](#システム-2)
-      - [役割](#役割-6)
+    - [NextCloud](#nextcloud)
+    - [Pythonスクリプト](#pythonスクリプト)
+    - [Webサーバー](#webサーバー)
 
-
-## なぜこんなことになったのか
+## なぜこんなことを始めたのか
 初心忘るべからず
 
 ### 2019年
@@ -89,12 +67,14 @@ VMが利用できるようになり、リスクを伴う検証が気軽にでき
 あれこれ考えるの本当に楽しいです。
 
 ## 現在の構成！
-![Map](img/ServerMap.drawio.png)
+![Map](img/ServerMap2.png)
 
 Proxmoxをインストールしたマシンを２台用意しクラスタを形成しています。
 
 ただしLet'snoteは入院中なため、デスクトップPC１台で運用しています。
 
+外部に公開するサーバーはすべてCloudflareを経由しています
+![zero](img/cloudflarezero.png)
 ## 物理機器
 ここからは自分用のメモを含んでいます。
 
@@ -175,3 +155,63 @@ Proxmoxで実行している仮想マシン等です
   * 
 * 遠隔地に存在する機器にローカルに存在するかのようなノリでアクセスできる
 ![warp](img/warp-to-warp2.png)
+
+### NextCloud
+#### 分類
+* VM
+
+#### システム
+* Ubuntu Desktop x64
+  * 日本語ディレクトリの文字化け防止
+* Snap版NextCloud
+
+#### 役割
+* NextCloudでファイルサーバーを運用する
+* 外部からの接続にはCloudflare Tunnelを利用する
+![Nextcloud](img/NextCloud.png)
+* 設定ファイル
+  * [Nginx Configuration - nextcloud.conf](Supplementary/nextcloudc.conf)
+  * [NextCloud Configuration - config.php](Supplementary/config.php)
+
+#### トラブル
+##### CloudflaredとNginxを挟むとドメインが信頼できなくなる
+* 原因
+  * 接続元IPアドレスに関するHTTPヘッダが`Cloudflared`もしくは`Nginx`のIPアドレス`127.0.0.1`になっている
+* 解決
+  * Cloudflare CDNを経由したときに付与されるヘッダ`CF-Connecting-IP`に関する設定を行う
+    ```config
+    set_real_ip_from 127.0.0.1;
+    real_ip_header CF-Connecting-IP;
+    ```
+  * [Restoring original visitor IPs - Cloudflare docs](https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/)
+  * スキーマに関する設定を追加する
+    ```config
+    proxy_set_header X-Forwarded-Proto $scheme
+    ```
+##### SSDへの書き込みができない
+* 原因
+  * 権限？
+* 解決
+  * SFTP経由で読み書きする
+
+### Pythonスクリプト
+#### 分類
+* LXC
+#### システム
+* ubuntu-22.04-standard_22.04-1_amd64
+#### 役割
+* UNIPAで出席登録が開始されたことを通知するスクリプトを動かす
+  * [ClassNotice - GitHub](https://github.com/matsukz/ClassNotice)
+
+### Webサーバー
+#### 分類
+* LXC
+#### システム
+* ubuntu-22.04-standard_22.04-1_amd64
+* Docker Engine
+* Docker Compose
+#### 役割
+* サーバーの死活確認を行うWebサーバーを実行する
+  * [Check_Server_Health - Github](https://github.com/matsukz/Check_Server_Health)
+  * 意図しないアクセスを防ぐため、Cloudflare Tunnelの認証機能を利用
+    * 条件はヒ・ミ・ツ
