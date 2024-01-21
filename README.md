@@ -37,6 +37,8 @@
       - [役割](#役割-5)
       - [OpenVPN](#openvpn)
       - [DNSサーバー](#dnsサーバー)
+      - [不正出席！？](#不正出席)
+      - [対策](#対策)
     - [WARP接続用サーバー](#warp接続用サーバー)
       - [分類](#分類-6)
       - [システム](#システム-2)
@@ -94,7 +96,7 @@ RDPもうまくいかないし保守性が終わってました。
 ### 2023年
 ついに革命が起きます。
 
-それは`Proxmox`という仮想化基盤を導入したことです。
+それは`Proxmox VE`という仮想化基盤を導入したことです。
 
 * ブラウザで管理できる
 * VMとLXCによりサービスを分離することができる
@@ -159,7 +161,7 @@ Proxmoxで実行している仮想マシン等です
 * Ubuntu Server x64
 * docker-compose
 #### 役割
-* 様々な検証をするやつ。
+* 様々な検証をするやつ
 * 壊しすぎて何度リストアしたか
 
 ### VPN DNS
@@ -176,8 +178,19 @@ Proxmoxで実行している仮想マシン等です
     * [詳細 - VPNServer.md](Supplementary/VPNServer.md)
     * 最も労力をかけたサーバーなのかもしれません
 #### DNSサーバー
-* 広告ブロッカーとして動作するローカルなDNSサーバーです
+* 広告ブロッカーとして動作するローカルDNSサーバーです
 * 円安時でもドネートしてしまうぐらい最高です
+
+#### 不正出席！？
+UNIPAで出席登録を行うとき、VPNを有効にしていると教室に居ない判定されます。
+
+UNIPAへの接続元IPアドレスで教室に居るのか居ないのかを判別していると思います。
+
+~~迷惑~~ 不正出席を防ぐ素晴らしいシステムです。
+
+#### 対策
+VPN接続時はUNIPAのドメインを解決しないようにする
+  * Pi-holeのグループ機能を利用
 
 ### WARP接続用サーバー
 #### 分類
@@ -194,7 +207,6 @@ Proxmoxで実行している仮想マシン等です
 ### NextCloud
 #### 分類
 * VM
-
 #### システム
 * Ubuntu Desktop x64
   * 日本語ディレクトリの文字化け防止
@@ -236,7 +248,6 @@ Proxmoxで実行している仮想マシン等です
 #### 役割
 * UNIPAで出席登録が開始されたことを通知するスクリプトを動かす
   * [ClassNotice - GitHub](https://github.com/matsukz/ClassNotice)
-
 ### Webサーバー
 #### 分類
 * LXC
@@ -274,22 +285,20 @@ Proxmoxで実行している仮想マシン等です
 
 一石二五六鳥ですね。
 
-<br><br>
+<br>
 
-このあたりで終わりにしてきます。ありがとうございました。
+ありがとうございました。
 
 2024-01-21
 
 ## クレジット
-* 作成
-  * 私
 * 図作成
-  * Draw.io
+  * draw.io
   * Microsoft PowerPoint
 * 画像利用
   * さくらのアイコンセット
     * https://knowledge.sakura.ad.jp/4724/
   * Cloudflare プレスキット
     * https://www.cloudflare.com/ja-jp/press-kit/
-  * Wikipedia
+  * NGINXのロゴ
     * https://en.wikipedia.org/wiki/File:Nginx_logo.svg
